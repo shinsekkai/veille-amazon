@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Veille produits Amazon — Dashboard</title>
+  <meta name="description" content="Dashboard de veille des produits Amazon : classement par volume de ventes mensuel, par catégorie, historique, alertes et export.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="logo">
+        <div class="mark">📊</div>
+        <div>
+          <h1>Veille produits Amazon</h1>
+          <p>Classement par ventes mensuelles · par catégorie · multi-marketplaces</p>
+        </div>
+      </div>
+      <div class="top-spacer"></div>
+      <div class="scan-badge" id="scan-info"></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="demo-banner">
+      <span>ℹ️</span>
+      <div>
+        <b>Prototype de démonstration.</b> Cette page est hébergée sur GitHub&nbsp;Pages (statique) et présente le tableau de bord avec un <b>jeu de données simulé</b>.
+        La collecte réelle (Keepa/PA-API + scraping ciblé, cf. arbitrages 4bis du brief) s'exécute côté pipeline serveur et alimente ce même dashboard via <code>assets/data.js</code>.
+        Le scraping automatisé d'Amazon est encadré par ses CGU&nbsp;: à réserver à un usage personnel et limité.
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="toolbar">
+      <div class="seg" id="mp-switch"></div>
+      <div class="grow"></div>
+      <button class="btn" id="btn-csv">⬇️ Export CSV</button>
+      <button class="btn primary" id="btn-xls">⬇️ Export Excel</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="field">
+        <label for="f-cat">Catégorie</label>
+        <select id="f-cat"></select>
+      </div>
+      <div class="field">
+        <label for="f-search">Recherche</label>
+        <input type="search" id="f-search" placeholder="Titre, marque ou ASIN…">
+      </div>
+      <div class="field">
+        <label for="f-min">Ventes min. / mois</label>
+        <input type="number" id="f-min" min="0" step="100" placeholder="0">
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button data-tab="ranking" class="active">Classement par catégorie</button>
+      <button data-tab="alerts">Alertes <span class="badge" id="alerts-count"></span></button>
+    </div>
+
+    <div id="tab-ranking"></div>
+    <div id="tab-alerts" style="display:none"></div>
+
+    <footer class="site">
+      Veille produits Amazon — prototype personnel. Données de démonstration.
+      Amazon, PA-API, Keepa, Jungle Scout et Helium 10 sont des marques de leurs détenteurs respectifs.
+    </footer>
+  </div>
+
+  <div class="modal-back" id="modal">
+    <div class="modal" id="modal-content"></div>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
