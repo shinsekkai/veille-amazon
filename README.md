@@ -28,18 +28,35 @@ La couche de collecte réelle est décrite plus bas.
 ## Structure
 
 ```
-index.html          Page du dashboard
-assets/style.css     Styles
-assets/app.js        Logique (filtres, classement, courbes SVG, alertes, exports)
-assets/data.js       Données (DÉMO — à remplacer par la sortie du pipeline de collecte)
-.github/workflows/   Déploiement automatique sur GitHub Pages (push sur main)
+index.html                         Page du dashboard (avec bouton « Actualiser en direct »)
+assets/style.css                   Styles (animations temps réel, toast, badges)
+assets/app.js                      Logique (filtres, classement, actualisation live, exports)
+assets/data.json                   Données actualisées par le collecteur Python
+assets/data.js                     Données initiales & moteur de rafraîchissement embarqué
+scripts/collect.py                 Collecteur Python (API Keepa, scraping ciblé & serveur /api/refresh)
+.github/workflows/deploy-pages.yml Déploiement automatique sur GitHub Pages
+.github/workflows/refresh-data.yml Actualisation planifiée / manuelle via Python
 ```
 
-## Brancher des données réelles
+## Actualisation en temps réel (Python + API dédiée, 0 token IA)
 
-Le dashboard consomme un objet `window.VEILLE_DATA` chargé depuis `assets/data.js`.
-Pour passer en production, il suffit qu'un pipeline de collecte régénère ce fichier
-(ou un `data.json` équivalent) au même format.
+Le bouton **« 🔄 Actualiser en direct »** fonctionne selon 3 niveaux complémentaires sans consommer aucun token LLM :
+
+1. **Mode Serveur Python temps réel (Local / VPS)** :
+   ```bash
+   # Sans clé externe (collecte simulée réaliste) :
+   python3 scripts/collect.py --serve --port 8000
+
+   # Avec clé API Keepa (données réelles Amazon sur les 5 marketplaces) :
+   KEEPA_API_KEY="votre_cle_keepa" python3 scripts/collect.py --serve --port 8000
+   ```
+   Ouvrez `http://localhost:8000` : chaque clic sur **Actualiser en direct** appelle `POST /api/refresh`, exécute le script Python, met à jour `assets/data.json` et rafraîchit instantanément le tableau de bord.
+
+2. **Mode GitHub Actions (Automatique ou 1-clic)** :
+   Le workflow `.github/workflows/refresh-data.yml` exécute `python3 scripts/collect.py` toutes les 6 heures (ou manuellement via *Run workflow*) et publie le nouveau `assets/data.json` sur GitHub Pages.
+
+3. **Mode Statique autonome (GitHub Pages)** :
+   Si aucun serveur Python local n'est joignable, le bouton bascule automatiquement sur le moteur temps réel embarqué pour recalculer les courbes à 30 jours, les classements et les alertes en direct.
 
 ### Contraintes à trancher (rappel du brief, section 4bis)
 
